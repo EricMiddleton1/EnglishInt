@@ -5,17 +5,17 @@
 
 using namespace std;
 
-string toEnglishRec(long);
+string toEnglishRec(string);
 
-string toEnglish(long i) {
+string toEnglish(string i) {
 	bool negative = false;
 
-	if(i == 0) {
-		return "zero";
-	}
-	else if(i < 0) {
-		i *= -1;
+	if(i[0] == '-') {
+		i = i.erase(0, 1);
 		negative = true;
+	}
+	if(i == "0") {
+		return "zero";
 	}
 
 	auto english = toEnglishRec(i);
@@ -23,41 +23,7 @@ string toEnglish(long i) {
 	return (negative) ? string("negative ") + english : english;
 }
 
-int getDigitCount(long i) {
-	if(i == 0) {
-		return 1;
-	}
-	else {
-		return log10(i) + 1.;
-	}
-}
-
-int getDigit(long i, int digit) {
-	int divisor;
-
-	for(divisor = 1; digit > 1; --digit) {
-		divisor *= 10;
-	}
-
-	return i / divisor;
-}
-
-int removeDigit(long& val) {
-	int count = getDigitCount(val);
-	int divisor = 1;
-
-	for(int i = 1; i < count; ++i) {
-		divisor *= 10;
-	}
-
-	int removed = val / divisor;
-	val %= divisor;
-
-	return removed;
-}
-
-
-string toEnglishRec(long i) {
+string toEnglishRec(string i) {
 	const string decimalTable[] = {
 		"one",
 		"two",
@@ -101,35 +67,27 @@ string toEnglishRec(long i) {
 		"quintillion"
 	};
 
-	if(i == 0) {
+	if(i.length() == 0) {
 		return "";
 	}
 
-	int digits = getDigitCount(i) - 1,
+	int digits = i.length() - 1,
 		subDigit = digits % 3,
 		level = digits / 3;
 	
 	string curStr;
+	int curDigit = i[0] - '0';
+	i.erase(0, 1);
 
 	if(subDigit == 0) {
-		int curDigit = removeDigit(i);
-		
 		curStr = decimalTable[curDigit - 1];
-
-		if(level > 0) {
-			//curStr += string(" ") + levelTable[level-1];
-		}
 	}
 	else if(subDigit == 1) {
-		int curDigit = removeDigit(i);
-
 		if(curDigit == 1) {
-			curDigit = 10*curDigit + removeDigit(i);
+			curDigit = 10*curDigit + (i[0] - '0');
 			curStr = teenTable[curDigit - 10];
 
-			if(level > 0) {
-				//curStr += string(" ") + levelTable[level-1];
-			}
+			i.erase(0, 1);
 		}
 		else {
 			curStr = tensTable[curDigit - 1];
@@ -137,13 +95,15 @@ string toEnglishRec(long i) {
 
 	}
 	else if(subDigit == 2) {
-		int curDigit = removeDigit(i);
-
 		curStr = decimalTable[curDigit - 1] + " hundred";
 	}
-	
 
-	if((( (getDigitCount(i) % 3) == 0) || subDigit == 0) && level > 0) {
+	//Trim leading zeros
+	while(i[0] == '0') {
+		i.erase(0, 1);
+	}
+
+	if((( (i.length() % 3) == 0) || subDigit == 0) && level > 0) {
 		curStr += string(" ") + levelTable[level-1];
 	}
 
@@ -159,11 +119,7 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	stringstream ss(argv[1]);
-
-	ss >> input;
-
-	cout << toEnglish(input) << endl;
+	cout << toEnglish(argv[1]) << endl;
 
 	return 0;
 }
