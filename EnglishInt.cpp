@@ -5,7 +5,9 @@
 
 using namespace std;
 
+string toEnglish(string);
 string toEnglishRec(string);
+int getCharValue(char);
 
 string toEnglish(string i) {
 	bool negative = false;
@@ -33,7 +35,13 @@ string toEnglishRec(string i) {
 		"six",
 		"seven",
 		"eight",
-		"nine"
+		"nine",
+		"a",
+		"b",
+		"c",
+		"d",
+		"e",
+		"f"
 	};
 	const string teenTable[] = {
 		"ten",
@@ -45,7 +53,13 @@ string toEnglishRec(string i) {
 		"sixteen",
 		"seventeen",
 		"eighteen",
-		"nineteen"
+		"nineteen",
+		"a-teen",
+		"b-teen",
+		"c-teen",
+		"d-teen",
+		"e-teen",
+		"f-teen"
 	};
 	const string tensTable[] {
 		"ten",
@@ -56,7 +70,13 @@ string toEnglishRec(string i) {
 		"sixty",
 		"seventy",
 		"eighty",
-		"ninety"
+		"ninety",
+		"aety",
+		"bety",
+		"cety",
+		"dety",
+		"exty",
+		"fety"
 	};
 	const string levelTable[] {
 		"thousand",
@@ -76,7 +96,7 @@ string toEnglishRec(string i) {
 		level = digits / 3;
 	
 	string curStr;
-	int curDigit = i[0] - '0';
+	int curDigit = getCharValue(i[0]);
 	i.erase(0, 1);
 
 	if(subDigit == 0) {
@@ -84,10 +104,9 @@ string toEnglishRec(string i) {
 	}
 	else if(subDigit == 1) {
 		if(curDigit == 1) {
-			curDigit = 10*curDigit + (i[0] - '0');
-			curStr = teenTable[curDigit - 10];
-
+			int value = getCharValue(i[0]);
 			i.erase(0, 1);
+			curStr = teenTable[value];
 		}
 		else {
 			curStr = tensTable[curDigit - 1];
@@ -108,6 +127,21 @@ string toEnglishRec(string i) {
 	}
 
 	return curStr + " " + toEnglishRec(i);
+}
+
+int getCharValue(char c) {
+	if( (c >= '0') && (c <= '9') ) {
+		return c - '0';
+	}
+	
+	if( (c >= 'a') && (c <= 'f') ) {
+		c += 'A' - 'a';
+	}
+	if( (c >= 'A') && (c <= 'F') ) {
+		return c - 'A' + 10;
+	}
+
+	throw runtime_error("[Error] Invalid character: " + c);
 }
 
 int main(int argc, char **argv) {
