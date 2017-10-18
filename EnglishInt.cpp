@@ -2,6 +2,7 @@
 #include <cmath>
 #include <sstream>
 #include <iostream>
+#include <stdexcept>
 
 using namespace std;
 
@@ -12,12 +13,25 @@ int getCharValue(char);
 string toEnglish(string i) {
 	bool negative = false;
 
+	if(i.length() == 0) {
+		throw runtime_error("[Error] Empty string");
+	}
+
 	if(i[0] == '-') {
 		i = i.erase(0, 1);
 		negative = true;
 	}
 	if(i == "0") {
 		return "zero";
+	}
+
+	//Trim leading zeros
+	while(i[0] == '0') {
+		i.erase(0, 1);
+	}
+
+	if(i.length() == 0) {
+		throw runtime_error("[Error] Too many zeros");
 	}
 
 	auto english = toEnglishRec(i);
@@ -36,12 +50,12 @@ string toEnglishRec(string i) {
 		"seven",
 		"eight",
 		"nine",
-		"a",
-		"b",
-		"c",
-		"d",
-		"e",
-		"f"
+		"ay",
+		"bee",
+		"cee",
+		"dee",
+		"ee",
+		"ef"
 	};
 	const string teenTable[] = {
 		"ten",
@@ -54,12 +68,12 @@ string toEnglishRec(string i) {
 		"seventeen",
 		"eighteen",
 		"nineteen",
-		"a-teen",
-		"b-teen",
-		"c-teen",
-		"d-teen",
-		"e-teen",
-		"f-teen"
+		"aylevin",
+		"belve",
+		"cirteen",
+		"dorteen",
+		"eefteen",
+		"fixteen"
 	};
 	const string tensTable[] {
 		"ten",
@@ -75,20 +89,36 @@ string toEnglishRec(string i) {
 		"bety",
 		"cety",
 		"dety",
-		"exty",
+		"eety",
 		"fety"
 	};
-	const string levelTable[] {
+	const string levelTable[19] {
 		"thousand",
 		"million",
 		"billion",
 		"trillion",
 		"quadrillion",
-		"quintillion"
+		"quintillion",
+		"sextillion",
+		"octillion",
+		"nonillion",
+		"decillion",
+		"undecillion",
+		"duodecillion",
+		"tredecillion",
+		"quattuordecillion",
+		"sexdecillion",
+		"septendecillion",
+		"octodecillion",
+		"novemdecillion",
+		"vigintillion",
 	};
 
 	if(i.length() == 0) {
 		return "";
+	}
+	else if(i.length() >= (3*19)) {
+		throw runtime_error("[Error] Number too large");
 	}
 
 	int digits = i.length() - 1,
@@ -141,7 +171,7 @@ int getCharValue(char c) {
 		return c - 'A' + 10;
 	}
 
-	throw runtime_error("[Error] Invalid character: " + c);
+	throw runtime_error(string("[Error] Invalid character: ") + c);
 }
 
 int main(int argc, char **argv) {
@@ -153,7 +183,14 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	cout << toEnglish(argv[1]) << endl;
+	try {
+		cout << toEnglish(argv[1]) << endl;
+	}
+	catch(const exception& e) {
+		cerr << e.what() << endl;
+
+		return -1;
+	}
 
 	return 0;
 }
