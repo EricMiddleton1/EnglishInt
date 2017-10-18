@@ -143,7 +143,7 @@ string toEnglishRec(long i) {
 	}
 	
 
-	if(((getDigitCount(i) != digits) || subDigit == 0) && level > 0) {
+	if((( (getDigitCount(i) % 3) == 0) || subDigit == 0) && level > 0) {
 		curStr += string(" ") + levelTable[level-1];
 	}
 
