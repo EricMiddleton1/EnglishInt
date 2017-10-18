@@ -5,16 +5,18 @@
 #include <stdexcept>
 
 using namespace std;
+using namespace std::string_literals;
 
 string toEnglish(string);
 string toEnglishRec(string);
 int getCharValue(char);
+void trimLeadingZeros(string&);
 
 string toEnglish(string i) {
 	bool negative = false;
 
 	if(i.length() == 0) {
-		throw runtime_error("[Error] Empty string");
+		throw runtime_error("[Error] Empty string"s);
 	}
 
 	if(i[0] == '-') {
@@ -22,103 +24,99 @@ string toEnglish(string i) {
 		negative = true;
 	}
 	if(i == "0") {
-		return "zero";
+		return "zero"s;
 	}
 
-	//Trim leading zeros
-	while(i[0] == '0') {
-		i.erase(0, 1);
-	}
+	trimLeadingZeros(i);
 
 	if(i.length() == 0) {
-		throw runtime_error("[Error] Too many zeros");
+		throw runtime_error("[Error] Too many zeros"s);
 	}
 
 	auto english = toEnglishRec(i);
 
-	return (negative) ? string("negative ") + english : english;
+	return (negative) ? "negative "s + english : english;
 }
 
 string toEnglishRec(string i) {
 	const string decimalTable[] = {
-		"one",
-		"two",
-		"three",
-		"four",
-		"five",
-		"six",
-		"seven",
-		"eight",
-		"nine",
-		"ay",
-		"bee",
-		"cee",
-		"dee",
-		"ee",
-		"ef"
+		"one"s,
+		"two"s,
+		"three"s,
+		"four"s,
+		"five"s,
+		"six"s,
+		"seven"s,
+		"eight"s,
+		"nine"s,
+		"ay"s,
+		"bee"s,
+		"cee"s,
+		"dee"s,
+		"ee"s,
+		"ef"s
 	};
 	const string teenTable[] = {
-		"ten",
-		"eleven",
-		"twelve",
-		"thirteen",
-		"fourteen",
-		"fifteen",
-		"sixteen",
-		"seventeen",
-		"eighteen",
-		"nineteen",
-		"aylevin",
-		"belve",
-		"cirteen",
-		"dorteen",
-		"eefteen",
-		"fixteen"
+		"ten"s,
+		"eleven"s,
+		"twelve"s,
+		"thirteen"s,
+		"fourteen"s,
+		"fifteen"s,
+		"sixteen"s,
+		"seventeen"s,
+		"eighteen"s,
+		"nineteen"s,
+		"aylevin"s,
+		"belve"s,
+		"cirteen"s,
+		"dorteen"s,
+		"eefteen"s,
+		"fixteen"s
 	};
 	const string tensTable[] {
-		"ten",
-		"twenty",
-		"thirty",
-		"forty",
-		"fifty",
-		"sixty",
-		"seventy",
-		"eighty",
-		"ninety",
-		"aety",
-		"bety",
-		"cety",
-		"dety",
-		"eety",
-		"fety"
+		"twenty"s,
+		"thirty"s,
+		"forty"s,
+		"fifty"s,
+		"sixty"s,
+		"seventy"s,
+		"eighty"s,
+		"ninety"s,
+		"aety"s,
+		"bety"s,
+		"cety"s,
+		"dety"s,
+		"eety"s,
+		"fety"s
 	};
 	const string levelTable[19] {
-		"thousand",
-		"million",
-		"billion",
-		"trillion",
-		"quadrillion",
-		"quintillion",
-		"sextillion",
-		"octillion",
-		"nonillion",
-		"decillion",
-		"undecillion",
-		"duodecillion",
-		"tredecillion",
-		"quattuordecillion",
-		"sexdecillion",
-		"septendecillion",
-		"octodecillion",
-		"novemdecillion",
-		"vigintillion",
+		"thousand"s,
+		"million"s,
+		"billion"s,
+		"trillion"s,
+		"quadrillion"s,
+		"quintillion"s,
+		"sextillion"s,
+		"octillion"s,
+		"nonillion"s,
+		"decillion"s,
+		"undecillion"s,
+		"duodecillion"s,
+		"tredecillion"s,
+		"quattuordecillion"s,
+		"sexdecillion"s,
+		"septendecillion"s,
+		"octodecillion"s,
+		"novemdecillion"s,
+		"vigintillion"s,
 	};
 
 	if(i.length() == 0) {
 		return "";
 	}
-	else if(i.length() >= (3*19)) {
-		throw runtime_error("[Error] Number too large");
+	else if(i.length() >= (3*20 + 1)) {
+		throw runtime_error("[Error] Number too large"s);
 	}
 
 	int digits = i.length() - 1,
@@ -139,24 +137,21 @@ string toEnglishRec(string i) {
 			curStr = teenTable[value];
 		}
 		else {
-			curStr = tensTable[curDigit - 1];
+			curStr = tensTable[curDigit - 2];
 		}
 
 	}
 	else if(subDigit == 2) {
-		curStr = decimalTable[curDigit - 1] + " hundred";
+		curStr = decimalTable[curDigit - 1] + " hundred"s;
 	}
 
-	//Trim leading zeros
-	while(i[0] == '0') {
-		i.erase(0, 1);
-	}
+	trimLeadingZeros(i);
 
 	if((( (i.length() % 3) == 0) || subDigit == 0) && level > 0) {
-		curStr += string(" ") + levelTable[level-1];
+		curStr += " "s + levelTable[level-1];
 	}
 
-	return curStr + " " + toEnglishRec(i);
+	return curStr + " "s + toEnglishRec(i);
 }
 
 int getCharValue(char c) {
@@ -171,14 +166,24 @@ int getCharValue(char c) {
 		return c - 'A' + 10;
 	}
 
-	throw runtime_error(string("[Error] Invalid character: ") + c);
+	throw runtime_error("[Error] Invalid character: "s + c);
+}
+
+void trimLeadingZeros(string& str) {
+	int zeroCount;
+
+	for(zeroCount = 0; (zeroCount < str.length()) && (str[zeroCount] == '0'); ++zeroCount);
+
+	if(zeroCount > 0) {
+		str.erase(0, zeroCount);
+	}
 }
 
 int main(int argc, char **argv) {
 	long input;
 	
 	if(argc != 2) {
-		cout << "Usage: " << argv[0] << " number" << endl;
+		cout << "Usage: "s << argv[0] << " number"s << endl;
 
 		return 1;
 	}
@@ -187,9 +192,7 @@ int main(int argc, char **argv) {
 		cout << toEnglish(argv[1]) << endl;
 	}
 	catch(const exception& e) {
-		cerr << e.what() << endl;
-
-		return -1;
+		return 1;
 	}
 
 	return 0;
